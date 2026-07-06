@@ -3,7 +3,8 @@ section .text
 
 _start:
     mov eax, [var1]
-    NEG eax
+    mov eax, 0
+    sub eax, [var1]
     mov ebx, 10
     imul ebx
     mov [result], eax
