@@ -3,10 +3,10 @@ section .text
 
 _start:
     ;read message
-    mov eax, 3
-    mov ebx, 0
-    mov ecx, message
-    mov edx, 10
+    mov eax, 3 ; sys_read
+    mov ebx, 0 ; stdin
+    mov ecx, message ; buffer
+    mov edx, 10 ; length
     int 0x80
 
     ; read key 
@@ -17,21 +17,21 @@ _start:
     int 0x80
 
     ; file open 
-    mov ecx, 0711o
-    mov ebx, filename
-    mov eax, 8
-    int 0x80
+    mov ecx, 0711o ; file permissions
+    mov ebx, filename ; file to create 
+    mov eax, 8 ; sys_creat
+    int 0x80 
     mov [fd_out], eax
 
     ; write Plain text:
-    mov eax, 4 
-    mov ebx, [fd_out]
-    mov ecx, label1
-    mov edx, len_label1
+    mov eax, 4 ; sys_write
+    mov ebx, [fd_out] 
+    mov ecx, label1 ; buffer
+    mov edx, len_label1 ; length
     int 0x80 
 
     ; write message
-    mov eax, 4
+    mov eax, 4 
     mov ebx, [fd_out]
     mov ecx, message
     mov edx, 10
@@ -58,14 +58,14 @@ _start:
     mov esi, encrypted
 
     encryption_loop:    
-        mov bl, [ecx]
-        xor bl, [edx]
-        inc ecx
-        inc edx
-        mov [esi], bl
-        inc esi
-        dec eax
-        jnz encryption_loop
+        mov bl, [ecx] ; load message byte
+        xor bl, [edx] ; XOR with key byte
+        inc ecx ; message pointer
+        inc edx ; key pointer
+        mov [esi], bl ; store encrypted byte
+        inc esi ; encrypted pointer
+        dec eax ; decrement counter
+        jnz encryption_loop ; repeat until counter reaches zero 
 
     ; Decryption loop
     mov eax, 10
@@ -97,12 +97,20 @@ _start:
     mov edx, 10
     int 0x80
 
+    ; write newline
+    mov eax, 4
+    mov ebx, [fd_out]
+    mov ecx, newline
+    mov edx, 1
+    int 0x80
+
     ; write Decrypted text:
     mov eax, 4
     mov ebx, [fd_out]
     mov ecx, label4
     mov edx, len_label4
     int 0x80
+
 
     ; write decrypted
     mov eax, 4
@@ -136,3 +144,4 @@ section .data
     len_label3 equ $ - label3 - 1
     label4 db 'Decrypted text: ', 0h
     len_label4 equ $ - label4 - 1
+    newline db 10
