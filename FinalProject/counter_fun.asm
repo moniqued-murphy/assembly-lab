@@ -7,18 +7,18 @@ count:
     mov ecx, DWORD[ebp+8] ; load argument from stack into ecx
 
 count_loop:
-    dec ecx
-    jnz count_loop
+    dec ecx ; decrement ecx
+    jnz count_loop ; jump back if not zer
 
 finish:
-    leave
-    ret
+    leave ; restore stack
+    ret ; return to caller
 
 _start:
-    mov eax, 7000
-    push eax
-    call count
+    mov eax, 7000 ; load counter value
+    push eax ; push onto stack
+    call count ; call the function 
 
 done:
         mov eax, 1
-        int 0x80
+        int 0x80c
